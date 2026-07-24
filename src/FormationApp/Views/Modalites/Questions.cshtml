@@ -1,0 +1,98 @@
+@model Modalite
+@{
+    ViewData["Title"] = "Questions — " + Model.Titre;
+    var nouvelleQuestion = ViewBag.NouvelleQuestion as QuestionFormViewModel ?? new QuestionFormViewModel { ModaliteId = Model.Id };
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Formations" asp-action="Index">Formations</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Modules" asp-action="Index" asp-route-formationId="@Model.Module?.FormationId">@Model.Module?.Formation?.Titre</a></li>
+        <li class="breadcrumb-item active">@Model.Titre</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4"><i class="bi bi-patch-question"></i> @Model.Titre</h1>
+<p class="text-muted">Score minimum de réussite : <strong>@Model.ScoreMinReussite%</strong></p>
+
+<div class="row">
+    <div class="col-md-7">
+        <h4>Questions (@Model.Questions.Count)</h4>
+        @foreach (var q in Model.Questions.OrderBy(x => x.Ordre))
+        {
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <p class="fw-semibold mb-2">@q.Ordre. @q.Enonce</p>
+                        <form asp-action="SupprimerQuestion" method="post">
+                            <input type="hidden" name="id" value="@q.Id" />
+                            <input type="hidden" name="modaliteId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Supprimer cette question ?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var o in q.Options)
+                        {
+                            <li class="@(o.EstCorrecte ? "text-success fw-semibold" : "")">
+                                <i class="bi @(o.EstCorrecte ? "bi-check-circle-fill" : "bi-circle")"></i> @o.Texte
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+        @if (!Model.Questions.Any())
+        {
+            <p class="text-muted">Aucune question pour l'instant. Ajoutez-en une avec le formulaire ci-contre.</p>
+        }
+    </div>
+
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Ajouter une question</h5>
+                <form asp-action="AjouterQuestion" method="post">
+                    <input type="hidden" name="ModaliteId" value="@Model.Id" />
+
+                    <div class="mb-2">
+                        <label class="form-label">Énoncé</label>
+                        <textarea name="Enonce" class="form-control" rows="2" required></textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Option 1 (correcte ?)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><input class="form-check-input mt-0" type="radio" name="OptionCorrecte" value="1" checked></span>
+                            <input type="text" name="Option1" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Option 2</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><input class="form-check-input mt-0" type="radio" name="OptionCorrecte" value="2"></span>
+                            <input type="text" name="Option2" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Option 3 (facultatif)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><input class="form-check-input mt-0" type="radio" name="OptionCorrecte" value="3"></span>
+                            <input type="text" name="Option3" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Option 4 (facultatif)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><input class="form-check-input mt-0" type="radio" name="OptionCorrecte" value="4"></span>
+                            <input type="text" name="Option4" class="form-control" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Ajouter la question</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+@model List<Inscription>
+@{
+    ViewData["Title"] = "Inscriptions";
+    var formations = ViewBag.Formations as List<Formation> ?? new();
+}
+
+<h1 class="mb-4"><i class="bi bi-people"></i> Inscriptions</h1>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <select name="formationId" class="form-select" onchange="this.form.submit()">
+            <option value="">Toutes les formations</option>
+            @foreach (var f in formations)
+            {
+                <option value="@f.Id" selected="@(ViewBag.FormationId == f.Id)">@f.Titre</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="statut" class="form-select" onchange="this.form.submit()">
+            <option value="">Tous les statuts</option>
+            @foreach (StatutInscription s in Enum.GetValues(typeof(StatutInscription)))
+            {
+                <option value="@s" selected="@(ViewBag.Statut?.ToString() == s.ToString())">@s</option>
+            }
+        </select>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Apprenant</th>
+                <th>Formation</th>
+                <th>Date d'inscription</th>
+                <th>Progression</th>
+                <th>Statut</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td>@i.ApplicationUser?.NomComplet <br /><small class="text-muted">@i.ApplicationUser?.Email</small></td>
+                    <td>@i.Formation?.Titre</td>
+                    <td>@i.DateInscription.ToString("dd/MM/yyyy")</td>
+                    <td style="min-width:140px">
+                        <div class="progress" style="height:18px">
+                            <div class="progress-bar" style="width:@(i.Progression)%">@i.Progression%</div>
+                        </div>
+                    </td>
+                    <td>
+                        <form asp-action="ChangerStatut" method="post" class="d-flex align-items-center gap-1">
+                            <input type="hidden" name="id" value="@i.Id" />
+                            <select name="statut" class="form-select form-select-sm" onchange="this.form.submit()">
+                                @foreach (StatutInscription s in Enum.GetValues(typeof(StatutInscription)))
+                                {
+                                    <option value="@s" selected="@(s == i.Statut)">@s</option>
+                                }
+                            </select>
+                        </form>
+                    </td>
+                    <td class="text-end">
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Supprimer cette inscription ?')">
+                            <input type="hidden" name="id" value="@i.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">Aucune inscription trouvée.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

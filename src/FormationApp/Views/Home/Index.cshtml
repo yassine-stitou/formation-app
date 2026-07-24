@@ -1,0 +1,48 @@
+@model List<Formation>
+@{
+    ViewData["Title"] = "Accueil";
+}
+
+<div class="p-5 mb-4 bg-primary bg-gradient text-white rounded-3 shadow">
+    <div class="container-fluid py-4">
+        <h1 class="display-5 fw-bold"><i class="bi bi-robot"></i> Apprenez avec un formateur IA</h1>
+        <p class="col-md-8 fs-5">
+            Suivez nos formations en ligne, interagissez à l'oral avec un avatar formateur intelligent
+            capable de présenter les modules et de répondre à vos questions en direct.
+        </p>
+        <a class="btn btn-light btn-lg fw-semibold" asp-controller="Formations" asp-action="Index">
+            Voir le catalogue <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
+
+<h2 class="mb-4">Formations récentes</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Aucune formation publiée pour le moment.</p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var formation in Model)
+        {
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@(string.IsNullOrEmpty(formation.ImageUrl) ? "https://placehold.co/600x300?text=Formation" : formation.ImageUrl)"
+                         class="card-img-top" alt="@formation.Titre" style="height:180px;object-fit:cover;">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-secondary align-self-start mb-2">@formation.Categorie?.Nom</span>
+                        <h5 class="card-title">@formation.Titre</h5>
+                        <p class="card-text text-muted small flex-grow-1">
+                            @(formation.Description?.Length > 100 ? formation.Description[..100] + "…" : formation.Description)
+                        </p>
+                        <a class="btn btn-outline-primary mt-auto" asp-controller="Formations" asp-action="Details" asp-route-id="@formation.Id">
+                            Découvrir <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

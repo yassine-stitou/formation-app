@@ -1,0 +1,76 @@
+@model ModulePlayerViewModel
+@{
+    ViewData["Title"] = Model.Module.Titre;
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group mb-4">
+            <div class="list-group-item bg-light fw-bold">@Model.Formation.Titre</div>
+            @foreach (var m in Model.TousLesModules)
+            {
+                <a asp-action="Player" asp-route-formationId="@Model.Formation.Id" asp-route-moduleId="@m.Id"
+                   class="list-group-item list-group-item-action @(m.Id == Model.Module.Id ? "active" : "")">
+                    Module @m.Ordre : @m.Titre
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h2>@Model.Module.Titre</h2>
+        <p class="text-muted">@Model.Module.Description</p>
+
+        @foreach (var modalite in Model.Module.Modalites.OrderBy(x => x.Ordre))
+        {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="bi @(modalite.Type == TypeModalite.Cours ? "bi-play-circle text-primary" : modalite.Type == TypeModalite.Exercice ? "bi-pencil-square text-warning" : "bi-patch-question text-success")"></i>
+                        <strong>@modalite.Titre</strong>
+                        <span class="badge bg-light text-dark">@modalite.Type</span>
+                    </span>
+                    <small class="text-muted">@modalite.DureeMinutes min</small>
+                </div>
+                <div class="card-body">
+                    @if (modalite.Type == TypeModalite.Examen)
+                    {
+                        <p>Ce quiz contient plusieurs questions. Score minimum requis : <strong>@modalite.ScoreMinReussite%</strong>.</p>
+                        <a asp-action="PasserExamen" asp-route-modaliteId="@modalite.Id" class="btn btn-success">
+                            <i class="bi bi-pencil-square"></i> Passer le quiz
+                        </a>
+                    }
+                    else
+                    {
+                        @if (!string.IsNullOrEmpty(modalite.VideoUrl))
+                        {
+                            <div class="ratio ratio-16x9 mb-3">
+                                <iframe src="@modalite.VideoUrl" allowfullscreen></iframe>
+                            </div>
+                        }
+                        <p style="white-space:pre-line">@modalite.Contenu</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm sticky-top text-center" style="top: 1rem;">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-robot"></i> Formateur IA
+            </div>
+            <div class="card-body">
+                <i class="bi bi-camera-video-fill text-primary mb-2" style="font-size:2.2rem;"></i>
+                <p class="small text-muted mb-3">
+                    Rejoignez le formateur IA dans une salle dédiée pour présenter ce module et poser vos questions à l'oral.
+                </p>
+                <a asp-action="AvatarSession" asp-route-formationId="@Model.Formation.Id" asp-route-moduleId="@Model.Module.Id"
+                   class="btn btn-primary w-100">
+                    <i class="bi bi-telephone-fill"></i> Rejoindre le formateur IA
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+

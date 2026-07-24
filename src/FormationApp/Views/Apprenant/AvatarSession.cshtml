@@ -1,0 +1,177 @@
+@model Module
+@{
+    Layout = null;
+    var formation = Model.Formation;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formateur IA - @Model.Titre</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: #111318;
+            color: #f1f1f1;
+            font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+        .call-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .call-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: #16181f;
+            border-bottom: 1px solid #24262f;
+        }
+        .call-topbar .title { font-weight: 600; font-size: 0.95rem; }
+        .call-topbar .subtitle { color: #9aa0ac; font-size: 0.8rem; }
+        .leave-btn {
+            background: #e53950;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .leave-btn:hover { background: #c92e42; color: #fff; }
+
+        .call-stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            min-height: 0;
+        }
+        .stage-inner {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            background: #1b1e27;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #avatar-video, #avatar-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            object-fit: cover;
+        }
+        .idle-placeholder {
+            text-align: center;
+            color: #7d8391;
+        }
+        .idle-placeholder i { font-size: 3.5rem; color: #3d4250; }
+
+        .call-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 0 28px;
+        }
+        .control-dock {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: #1b1e27;
+            padding: 12px 20px;
+            border-radius: 40px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        }
+        .call-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: transform .15s ease;
+        }
+        .call-btn:hover { transform: scale(1.06); }
+        .call-btn:disabled { opacity: .6; cursor: default; transform: none; }
+        .call-btn.start { background: #2fb56b; color: #fff; }
+        .call-btn.stop { background: #e53950; color: #fff; }
+
+        #avatar-status { color: #9aa0ac; font-size: 0.85rem; }
+
+        .d-none { display: none !important; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .d-block { display: block; }
+    </style>
+</head>
+<body>
+    <div class="call-shell">
+        <div class="call-topbar">
+            <div>
+                <div class="title"><i class="bi bi-robot"></i> Formateur IA</div>
+                <div class="subtitle">@formation?.Titre — @Model.Titre</div>
+            </div>
+            <a class="leave-btn" asp-controller="Apprenant" asp-action="Player" asp-route-formationId="@Model.FormationId" asp-route-moduleId="@Model.Id">
+                <i class="bi bi-box-arrow-left"></i> Quitter
+            </a>
+        </div>
+
+        <div class="call-stage">
+            <div class="stage-inner">
+                <video id="avatar-video" autoplay playsinline class="d-none"></video>
+                <iframe id="avatar-frame" allow="microphone" class="d-none" title="Formateur IA"></iframe>
+                <div id="avatar-placeholder" class="idle-placeholder">
+                    <i class="bi bi-robot d-block mb-2"></i>
+                    <div>Cliquez sur le bouton ci-dessous pour rejoindre le formateur IA</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="call-controls">
+            <div class="control-dock">
+                <button id="avatar-start" class="call-btn start" title="Démarrer le formateur IA">
+                    <i class="bi bi-telephone-fill"></i>
+                </button>
+                <button id="avatar-stop" class="call-btn stop d-none" title="Terminer la session">
+                    <i class="bi bi-telephone-x-fill"></i>
+                </button>
+            </div>
+            <div id="avatar-status">Formateur IA non démarré.</div>
+        </div>
+    </div>
+
+    <script>
+        window.formationAppAvatarConfig = {
+            moduleId: @Model.Id,
+            sessionUrl: '@Url.Action("CreerSession", "Avatar", new { moduleId = Model.Id })'
+        };
+    </script>
+    <script type="module" src="~/js/avatar.js" asp-append-version="true"></script>
+    <script>
+        // Masque le message d'accueil dès qu'un flux (vidéo ou iframe) démarre.
+        const placeholder = document.getElementById('avatar-placeholder');
+        const observer = new MutationObserver(() => {
+            const videoVisible = !document.getElementById('avatar-video').classList.contains('d-none');
+            const frameVisible = !document.getElementById('avatar-frame').classList.contains('d-none');
+            placeholder.classList.toggle('d-none', videoVisible || frameVisible);
+        });
+        observer.observe(document.getElementById('avatar-video'), { attributes: true, attributeFilter: ['class'] });
+        observer.observe(document.getElementById('avatar-frame'), { attributes: true, attributeFilter: ['class'] });
+    </script>
+</body>
+</html>

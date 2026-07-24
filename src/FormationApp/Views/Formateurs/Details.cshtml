@@ -1,0 +1,42 @@
+@model Formateur
+@{
+    ViewData["Title"] = Model.NomComplet;
+}
+
+<div class="row">
+    <div class="col-md-4 text-center">
+        <img src="@(string.IsNullOrEmpty(Model.PhotoUrl) ? "https://placehold.co/200x200?text=" + Model.Prenom[0] : Model.PhotoUrl)"
+             class="rounded-circle mb-3" width="160" height="160" style="object-fit:cover;" alt="@Model.NomComplet">
+        <h3>@Model.NomComplet</h3>
+        <p class="text-muted">@Model.Specialite</p>
+        <p><i class="bi bi-envelope"></i> @Model.Email</p>
+        @if (!string.IsNullOrEmpty(Model.Telephone))
+        {
+            <p><i class="bi bi-telephone"></i> @Model.Telephone</p>
+        }
+    </div>
+    <div class="col-md-8">
+        <h5>Biographie</h5>
+        <p>@Model.Bio</p>
+
+        <h5 class="mt-4">Formations dispensées (@Model.Formations.Count)</h5>
+        <ul class="list-group">
+            @foreach (var f in Model.Formations)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @f.Titre
+                    <span class="badge bg-secondary">@f.Statut</span>
+                </li>
+            }
+            @if (!Model.Formations.Any())
+            {
+                <li class="list-group-item text-muted">Aucune formation pour le moment.</li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> Modifier</a>
+    <a asp-action="Index" class="btn btn-outline-primary">Retour à la liste</a>
+</div>

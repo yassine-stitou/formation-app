@@ -1,0 +1,15 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+## Secrets - ne jamais committer de vraies clés API
+appsettings.Production.json
+*.pfx
+
+## OS
+.DS_Store
+Thumbs.db

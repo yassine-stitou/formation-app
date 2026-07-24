@@ -1,0 +1,42 @@
+@model Module
+@{
+    ViewData["Title"] = "Nouveau module";
+    var formation = ViewBag.Formation as Formation;
+}
+
+<h1 class="mb-4"><i class="bi bi-plus-circle"></i> Nouveau module — @formation?.Titre</h1>
+
+<div class="row">
+    <div class="col-md-7">
+        <form asp-action="Create" method="post">
+            <input type="hidden" asp-for="FormationId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Titre" class="form-label"></label>
+                <input asp-for="Titre" class="form-control" />
+                <span asp-validation-for="Titre" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Ordre" class="form-label"></label>
+                <input asp-for="Ordre" class="form-control" style="max-width:120px" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="ContexteIA" class="form-label"></label>
+                <textarea asp-for="ContexteIA" class="form-control" rows="4" placeholder="Ex: résumé pédagogique utilisé par l'avatar formateur IA pour répondre aux questions des apprenants sur ce module."></textarea>
+                <div class="form-text">Ce texte sert de base de connaissance au formateur IA lorsqu'un apprenant lui pose une question sur ce module.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Créer</button>
+            <a asp-action="Index" asp-route-formationId="@Model.FormationId" class="btn btn-outline-secondary">Annuler</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

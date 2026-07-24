@@ -1,0 +1,37 @@
+@model List<Inscription>
+@{
+    ViewData["Title"] = "Mes formations";
+}
+
+<h1 class="mb-4"><i class="bi bi-journal-check"></i> Mes formations</h1>
+
+<div class="row g-4">
+    @foreach (var i in Model)
+    {
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <span class="badge bg-secondary align-self-start mb-2">@i.Formation?.Categorie?.Nom</span>
+                    <h5 class="card-title">@i.Formation?.Titre</h5>
+                    <p class="text-muted small"><i class="bi bi-person"></i> @i.Formation?.Formateur?.NomComplet</p>
+
+                    <div class="progress mb-2" style="height:18px">
+                        <div class="progress-bar bg-success" style="width:@(i.Progression)%">@i.Progression%</div>
+                    </div>
+                    <span class="badge @(i.Statut == StatutInscription.Terminee ? "bg-success" : "bg-primary") mb-3 align-self-start">@i.Statut</span>
+
+                    <a asp-controller="Apprenant" asp-action="Player" asp-route-formationId="@i.FormationId" class="btn btn-primary mt-auto">
+                        <i class="bi bi-play-circle"></i> @(i.Progression > 0 ? "Continuer" : "Commencer")
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <p class="text-muted">Vous n'êtes inscrit à aucune formation pour le moment.</p>
+            <a asp-controller="Formations" asp-action="Index" class="btn btn-primary">Découvrir le catalogue</a>
+        </div>
+    }
+</div>

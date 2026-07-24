@@ -1,0 +1,21 @@
+@model QuizResultViewModel
+@{
+    ViewData["Title"] = "Résultat";
+}
+
+<div class="text-center py-4">
+    <i class="bi @(Model.Reussi ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")" style="font-size:4rem;"></i>
+    <h1 class="mt-3">@(Model.Reussi ? "Félicitations, quiz réussi !" : "Quiz non validé")</h1>
+    <p class="lead">Score obtenu : <strong>@Model.Score%</strong> (@Model.BonnesReponses / @Model.NombreQuestions bonnes réponses)</p>
+    <p class="text-muted">Score minimum requis : @Model.Modalite.ScoreMinReussite%</p>
+
+    @if (!Model.Reussi)
+    {
+        <a asp-action="PasserExamen" asp-route-modaliteId="@Model.Modalite.Id" class="btn btn-primary">
+            <i class="bi bi-arrow-repeat"></i> Retenter le quiz
+        </a>
+    }
+    <a asp-action="Player" asp-route-formationId="@Model.Modalite.Module?.FormationId" asp-route-moduleId="@Model.Modalite.ModuleId" class="btn btn-outline-secondary">
+        Retour au module
+    </a>
+</div>

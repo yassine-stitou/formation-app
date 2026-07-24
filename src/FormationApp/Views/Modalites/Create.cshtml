@@ -1,0 +1,62 @@
+@model Modalite
+@{
+    ViewData["Title"] = "Nouveau contenu";
+    var module = ViewBag.Module as Module;
+}
+
+<h1 class="mb-4"><i class="bi bi-plus-circle"></i> Nouveau contenu — @module?.Titre</h1>
+
+<div class="row">
+    <div class="col-md-7">
+        <form asp-action="Create" method="post">
+            <input type="hidden" asp-for="ModuleId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Type" class="form-label"></label>
+                <select asp-for="Type" class="form-select">
+                    <option value="@TypeModalite.Cours">Cours</option>
+                    <option value="@TypeModalite.Exercice">Exercice</option>
+                    <option value="@TypeModalite.Examen">Examen / Quiz</option>
+                </select>
+                <div class="form-text">
+                    Pour un examen, vous pourrez ajouter les questions juste après la création.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Titre" class="form-label"></label>
+                <input asp-for="Titre" class="form-control" />
+                <span asp-validation-for="Titre" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Contenu" class="form-label">Contenu / consigne (cours ou exercice)</label>
+                <textarea asp-for="Contenu" class="form-control" rows="5"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="VideoUrl" class="form-label"></label>
+                <input asp-for="VideoUrl" class="form-control" placeholder="https://..." />
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Ordre" class="form-label"></label>
+                    <input asp-for="Ordre" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DureeMinutes" class="form-label"></label>
+                    <input asp-for="DureeMinutes" class="form-control" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ScoreMinReussite" class="form-label">Score minimum de réussite (%) — pour les examens</label>
+                <input asp-for="ScoreMinReussite" class="form-control" style="max-width:150px" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Créer</button>
+            <a asp-controller="Modules" asp-action="Index" asp-route-formationId="@module?.FormationId" class="btn btn-outline-secondary">Annuler</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

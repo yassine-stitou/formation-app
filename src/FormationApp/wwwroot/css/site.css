@@ -1,0 +1,40 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #f7f8fa;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.navbar-brand {
+    letter-spacing: .5px;
+}
+
+.card {
+    border: none;
+    border-radius: .75rem;
+}
+
+.card-img-top {
+    border-top-left-radius: .75rem;
+    border-top-right-radius: .75rem;
+}
+
+#avatar-video {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #eef4ff;
+}
+
+footer {
+    flex-shrink: 0;
+}

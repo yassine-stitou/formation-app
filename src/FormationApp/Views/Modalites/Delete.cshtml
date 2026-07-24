@@ -1,0 +1,23 @@
+@model Modalite
+@{
+    ViewData["Title"] = "Supprimer le contenu";
+}
+
+<h1 class="mb-4 text-danger"><i class="bi bi-trash"></i> Supprimer ce contenu</h1>
+
+<div class="alert alert-warning">Êtes-vous sûr de vouloir supprimer "@Model.Titre" ?</div>
+
+<dl class="row">
+    <dt class="col-sm-2">Titre</dt>
+    <dd class="col-sm-10">@Model.Titre</dd>
+    <dt class="col-sm-2">Type</dt>
+    <dd class="col-sm-10">@Model.Type</dd>
+    <dt class="col-sm-2">Module</dt>
+    <dd class="col-sm-10">@Model.Module?.Titre</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Confirmer la suppression</button>
+    <a asp-controller="Modules" asp-action="Index" asp-route-formationId="@Model.Module?.FormationId" class="btn btn-outline-secondary">Annuler</a>
+</form>
